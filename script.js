@@ -12,7 +12,7 @@ const CONTRIBUTION_KEY = "personalClickCount";
 const NICKNAME_KEY = "nickname";
 const USER_ID_KEY = "userId";
 
-const TARGET_SCORE = 300; // ВРЕМЕННО для теста финала! Боевое значение: 1000000000000000000 (квинтиллион)
+const TARGET_SCORE = 1000000000000000000; // квинтиллион — цель игры
 
 const UPGRADES = [
   { id: 1, name: "Автокликер I", cost: 50, cps: 1 },
@@ -252,16 +252,36 @@ setInterval(loadCurrentCount, 2000);
 setInterval(pingOnline, 7000);
 setInterval(sendAutoClicks, 1000);
 
-// ВРЕМЕННЫЙ ЧИТ ДЛЯ ТЕСТА ФИНАЛА: пробел = +50 кликов. Удалить перед боевым релизом!
-document.addEventListener("keydown", async (keyEvent) => {
+// ТЕСТОВЫЙ ЧИТ ДЛЯ ПРОВЕРКИ ФИНАЛА: пробел запускает/останавливает турбо-набор кликов,
+// темп нарастает каждый тик, чтобы реально дойти до квинтиллиона за разумное время.
+let cheatActive = false;
+let cheatRate = 0;
+const CHEAT_TICK_MS = 300;
+const CHEAT_START_RATE = 10000;
+const CHEAT_GROWTH = 1.8;
+
+document.addEventListener("keydown", (keyEvent) => {
   if (keyEvent.code !== "Space" || gameOver) return;
   keyEvent.preventDefault();
+
+  cheatActive = !cheatActive;
+  cheatRate = CHEAT_START_RATE;
+  onlineIndicator.textContent = cheatActive
+    ? "🚀 ЧИТ АКТИВЕН: турбо-набор кликов..."
+    : "🟢 Онлайн: …";
+});
+
+setInterval(async () => {
+  if (!cheatActive || gameOver) return;
+
+  const amount = Math.floor(cheatRate);
+  cheatRate *= CHEAT_GROWTH;
 
   try {
     const response = await fetch("/api/registerClick", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId, amount: 50 }),
+      body: JSON.stringify({ userId, amount }),
     });
     const data = await response.json();
 
@@ -269,10 +289,14 @@ document.addEventListener("keydown", async (keyEvent) => {
     updateButtonLevel(data.count);
     renderLeaderboard(data.leaderboard);
     checkGameOver(data.count);
+
+    if (!gameOver) {
+      onlineIndicator.textContent = `🚀 ЧИТ: +${amount.toLocaleString("ru-RU")} кликов/тик`;
+    }
   } catch (error) {
     console.error("Ошибка чит-кода:", error);
   }
-});
+}, CHEAT_TICK_MS);
 
 clickButton.addEventListener("click", async (clickEvent) => {
   if (gameOver) return;
