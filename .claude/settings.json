@@ -10,7 +10,12 @@
       "Bash(cd \"/c/Users/user/гиминай игра\" && REDIS_URL=$\\(grep REDIS_URL .env.local | sed -E 's/REDIS_URL=\"\\(.*\\)\"/\\\\1/'\\) node -e ' *)",
       "Read(//c/c/Users/user/гиминай игра/**)",
       "Bash(node --check script.js)",
-      "Bash(node --experimental-vm-modules -e ' *)"
+      "Bash(node --experimental-vm-modules -e ' *)",
+      "Bash(curl -s https://global-clicker-alpha.vercel.app/script.js)",
+      "Bash(cd \"/c/Users/user/гиминай игра\" && rm -f .env.production)"
+    ],
+    "additionalDirectories": [
+      "c:\\c\\Users\\user\\гиминай игра"
     ]
   }
 }

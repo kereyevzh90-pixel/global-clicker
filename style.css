@@ -164,6 +164,25 @@ h1 {
   margin-bottom: 12px;
 }
 
+.autoclick-toggle {
+  display: block;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.autoclick-toggle.paused {
+  background: rgba(255, 107, 107, 0.25);
+  color: #ff6b6b;
+}
+
 .upgrade {
   display: flex;
   align-items: center;

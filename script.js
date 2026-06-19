@@ -23,6 +23,9 @@ const UPGRADES = [
 let gameOver = false;
 let pendingAutoClicks = 0;
 
+const AUTO_CLICK_PAUSED_KEY = "autoClickPaused";
+let autoClickPaused = localStorage.getItem(AUTO_CLICK_PAUSED_KEY) === "true";
+
 let userId = localStorage.getItem(USER_ID_KEY);
 if (!userId) {
   userId = crypto.randomUUID();
@@ -105,6 +108,23 @@ function buyUpgrade(upgradeId) {
 UPGRADES.forEach((upgrade) => {
   document.getElementById(`buy-${upgrade.id}`).addEventListener("click", () => buyUpgrade(upgrade.id));
 });
+
+const toggleAutoClickButton = document.getElementById("toggleAutoClick");
+
+function renderAutoClickToggle() {
+  toggleAutoClickButton.textContent = autoClickPaused
+    ? "▶ Включить автокликер"
+    : "⏸ Поставить автокликер на паузу";
+  toggleAutoClickButton.classList.toggle("paused", autoClickPaused);
+}
+
+toggleAutoClickButton.addEventListener("click", () => {
+  autoClickPaused = !autoClickPaused;
+  localStorage.setItem(AUTO_CLICK_PAUSED_KEY, autoClickPaused);
+  renderAutoClickToggle();
+});
+
+renderAutoClickToggle();
 
 function spawnPlusOne(clickEvent) {
   const plusOne = document.createElement("span");
@@ -200,7 +220,7 @@ async function loadCurrentCount() {
 }
 
 async function sendAutoClicks() {
-  if (gameOver) return;
+  if (gameOver || autoClickPaused) return;
 
   const cps = getTotalCps();
   if (cps <= 0) return;
