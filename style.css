@@ -5,13 +5,26 @@
 }
 
 body {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 20px;
+  padding: 60px 20px 30px;
   background: linear-gradient(135deg, #1e1e2f, #2d2d44);
   font-family: "Segoe UI", Arial, sans-serif;
   color: #fff;
+}
+
+.online-indicator {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 6px 14px;
+  border-radius: 20px;
 }
 
 .container {
@@ -35,7 +48,24 @@ h1 {
 .personal-contribution {
   font-size: 16px;
   color: #b8b8d1;
-  margin-bottom: 25px;
+  margin-bottom: 15px;
+}
+
+.nickname-input {
+  display: block;
+  margin: 0 auto 25px;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-align: center;
+  border: none;
+  border-radius: 20px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.nickname-input::placeholder {
+  color: #b8b8d1;
 }
 
 .button-wrapper {
@@ -111,4 +141,32 @@ h1 {
 
 .title.show {
   opacity: 1;
+}
+
+.leaderboard {
+  margin-top: 35px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px 24px;
+  min-width: 260px;
+}
+
+.leaderboard h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.leaderboard ol {
+  list-style: none;
+  text-align: left;
+}
+
+.leaderboard li {
+  font-size: 15px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.leaderboard li:last-child {
+  border-bottom: none;
 }

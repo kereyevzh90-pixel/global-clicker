@@ -7,14 +7,30 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="onlineIndicator" class="online-indicator">🟢 Онлайн: 0 чел.</div>
+
   <div class="container">
     <h1>Глобальный кликер</h1>
     <div id="counter" class="counter">0</div>
     <div id="personalContribution" class="personal-contribution">Ваш вклад: 0 кликов</div>
+
+    <input
+      id="nicknameInput"
+      class="nickname-input"
+      type="text"
+      placeholder="Ваш никнейм"
+      maxlength="20"
+    />
+
     <div class="button-wrapper">
       <button id="clickButton" class="click-button">Кликни меня!</button>
     </div>
     <div id="title" class="title"></div>
+
+    <div class="leaderboard">
+      <h2>🏆 Топ кликеров</h2>
+      <ol id="leaderboardList"></ol>
+    </div>
   </div>
 
   <script src="script.js"></script>
