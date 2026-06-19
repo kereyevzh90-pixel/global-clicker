@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X POST -H \"Content-Type: application/json\" -d '{\"clientId\":\"test1\"}' https://global-clicker-alpha.vercel.app/api/ping)",
+      "Bash(curl -s -X POST -H \"Content-Type: application/json\" -d '{\"nickname\":\"ТестИгрок\"}' https://global-clicker-alpha.vercel.app/api/registerClick)",
+      "Bash(curl -s https://global-clicker-alpha.vercel.app/api/registerClick -o /tmp/resp.json)",
+      "Read(//tmp/**)",
+      "Bash(xxd)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

@@ -68,6 +68,14 @@ h1 {
   color: #b8b8d1;
 }
 
+.nickname-error {
+  font-size: 13px;
+  color: #ff6b6b;
+  min-height: 16px;
+  margin-top: -15px;
+  margin-bottom: 20px;
+}
+
 .button-wrapper {
   position: relative;
   display: inline-block;

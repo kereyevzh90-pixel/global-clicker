@@ -10,7 +10,12 @@ const TITLES = [
 
 async function getTopLeaders(redis) {
   const entries = await redis.zRangeWithScores("leaderboard", 0, 2, { REV: true });
-  return entries.map((entry) => ({ nickname: entry.value, clicks: entry.score }));
+  const leaders = [];
+  for (const entry of entries) {
+    const nickname = (await redis.hGet("userNicknames", entry.value)) || "Игрок";
+    leaders.push({ nickname, clicks: entry.score });
+  }
+  return leaders;
 }
 
 export default async function handler(req, res) {
@@ -26,10 +31,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Метод не поддерживается" });
   }
 
-  const nickname = (req.body && req.body.nickname) || "Игрок";
+  const userId = (req.body && req.body.userId) || "anonymous";
 
   const count = await redis.incr("clickCount");
-  await redis.zIncrBy("leaderboard", 1, nickname);
+  await redis.zIncrBy("leaderboard", 1, userId);
   const leaderboard = await getTopLeaders(redis);
 
   let title = null;

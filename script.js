@@ -4,27 +4,46 @@ const counter = document.getElementById("counter");
 const titleEl = document.getElementById("title");
 const personalContributionEl = document.getElementById("personalContribution");
 const nicknameInput = document.getElementById("nicknameInput");
+const nicknameError = document.getElementById("nicknameError");
 const onlineIndicator = document.getElementById("onlineIndicator");
 const leaderboardList = document.getElementById("leaderboardList");
 
 const CONTRIBUTION_KEY = "personalClickCount";
 const NICKNAME_KEY = "nickname";
-const CLIENT_ID_KEY = "clientId";
+const USER_ID_KEY = "userId";
+
+let userId = localStorage.getItem(USER_ID_KEY);
+if (!userId) {
+  userId = crypto.randomUUID();
+  localStorage.setItem(USER_ID_KEY, userId);
+}
 
 nicknameInput.value = localStorage.getItem(NICKNAME_KEY) || "";
-nicknameInput.addEventListener("change", () => {
-  localStorage.setItem(NICKNAME_KEY, nicknameInput.value.trim());
+
+nicknameInput.addEventListener("change", async () => {
+  const newNickname = nicknameInput.value.trim();
+  if (!newNickname) return;
+
+  try {
+    const response = await fetch("/api/setNickname", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, nickname: newNickname }),
+    });
+    const data = await response.json();
+
+    if (data.occupied) {
+      nicknameError.textContent = "Этот ник уже занят другим игроком!";
+      nicknameInput.value = localStorage.getItem(NICKNAME_KEY) || "";
+      return;
+    }
+
+    nicknameError.textContent = "";
+    localStorage.setItem(NICKNAME_KEY, newNickname);
+  } catch (error) {
+    console.error("Ошибка при сохранении ника:", error);
+  }
 });
-
-function getNickname() {
-  return nicknameInput.value.trim() || "Игрок";
-}
-
-let clientId = localStorage.getItem(CLIENT_ID_KEY);
-if (!clientId) {
-  clientId = crypto.randomUUID();
-  localStorage.setItem(CLIENT_ID_KEY, clientId);
-}
 
 function getPersonalCount() {
   return Number(localStorage.getItem(CONTRIBUTION_KEY)) || 0;
@@ -107,7 +126,7 @@ async function pingOnline() {
     const response = await fetch("/api/ping", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clientId }),
+      body: JSON.stringify({ clientId: userId }),
     });
     const data = await response.json();
     onlineIndicator.textContent = `🟢 Онлайн: ${data.online} чел.`;
@@ -132,7 +151,7 @@ clickButton.addEventListener("click", async (clickEvent) => {
     const response = await fetch("/api/registerClick", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nickname: getNickname() }),
+      body: JSON.stringify({ userId }),
     });
 
     const data = await response.json();
