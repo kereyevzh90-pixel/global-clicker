@@ -13,6 +13,7 @@ async function loadCurrentCount() {
 }
 
 loadCurrentCount();
+setInterval(loadCurrentCount, 2000);
 
 clickButton.addEventListener("click", async () => {
   clickButton.disabled = true;
