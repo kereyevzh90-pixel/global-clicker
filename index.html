@@ -28,10 +28,39 @@
     </div>
     <div id="title" class="title"></div>
 
+    <div class="shop">
+      <h2>🛒 Магазин улучшений</h2>
+      <div class="upgrade" data-upgrade-id="1">
+        <div class="upgrade-info">
+          <div class="upgrade-name">Автокликер I — +1 клик/сек</div>
+          <div class="upgrade-owned" id="owned-1">У вас: 0</div>
+        </div>
+        <button class="upgrade-buy" id="buy-1">Купить за 50</button>
+      </div>
+      <div class="upgrade" data-upgrade-id="2">
+        <div class="upgrade-info">
+          <div class="upgrade-name">Автокликер II — +10 кликов/сек</div>
+          <div class="upgrade-owned" id="owned-2">У вас: 0</div>
+        </div>
+        <button class="upgrade-buy" id="buy-2">Купить за 3 000</button>
+      </div>
+      <div class="upgrade" data-upgrade-id="3">
+        <div class="upgrade-info">
+          <div class="upgrade-name">Автокликер III — +100 кликов/сек</div>
+          <div class="upgrade-owned" id="owned-3">У вас: 0</div>
+        </div>
+        <button class="upgrade-buy" id="buy-3">Купить за 100 000</button>
+      </div>
+    </div>
+
     <div class="leaderboard">
       <h2>🏆 Топ кликеров</h2>
       <ol id="leaderboardList"></ol>
     </div>
+  </div>
+
+  <div id="gameOverOverlay" class="game-over-overlay">
+    <div class="game-over-text">ИГРА ПРОЙДЕНА!<br />Вы сломали счётчик!</div>
   </div>
 
   <script src="script.js"></script>

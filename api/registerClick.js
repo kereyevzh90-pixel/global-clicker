@@ -32,13 +32,14 @@ export default async function handler(req, res) {
   }
 
   const userId = (req.body && req.body.userId) || "anonymous";
+  const amount = Math.max(1, Number(req.body && req.body.amount) || 1);
 
-  const count = await redis.incr("clickCount");
-  await redis.zIncrBy("leaderboard", 1, userId);
+  const count = await redis.incrBy("clickCount", amount);
+  await redis.zIncrBy("leaderboard", amount, userId);
   const leaderboard = await getTopLeaders(redis);
 
   let title = null;
-  if (count % 50 === 0) {
+  if (Math.floor(count / 50) > Math.floor((count - amount) / 50)) {
     title = TITLES[Math.floor(Math.random() * TITLES.length)];
   }
 

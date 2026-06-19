@@ -8,7 +8,9 @@
       "Bash(xxd)",
       "Bash(node -e ' *)",
       "Bash(cd \"/c/Users/user/гиминай игра\" && REDIS_URL=$\\(grep REDIS_URL .env.local | sed -E 's/REDIS_URL=\"\\(.*\\)\"/\\\\1/'\\) node -e ' *)",
-      "Read(//c/c/Users/user/гиминай игра/**)"
+      "Read(//c/c/Users/user/гиминай игра/**)",
+      "Bash(node --check script.js)",
+      "Bash(node --experimental-vm-modules -e ' *)"
     ]
   }
 }

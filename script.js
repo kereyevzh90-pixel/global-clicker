@@ -12,6 +12,17 @@ const CONTRIBUTION_KEY = "personalClickCount";
 const NICKNAME_KEY = "nickname";
 const USER_ID_KEY = "userId";
 
+const TARGET_SCORE = 1000000000000000000; // квинтиллион — цель игры
+
+const UPGRADES = [
+  { id: 1, name: "Автокликер I", cost: 50, cps: 1 },
+  { id: 2, name: "Автокликер II", cost: 3000, cps: 10 },
+  { id: 3, name: "Автокликер III", cost: 100000, cps: 100 },
+];
+
+let gameOver = false;
+let pendingAutoClicks = 0;
+
 let userId = localStorage.getItem(USER_ID_KEY);
 if (!userId) {
   userId = crypto.randomUUID();
@@ -51,11 +62,49 @@ function getPersonalCount() {
   return Number(localStorage.getItem(CONTRIBUTION_KEY)) || 0;
 }
 
-function bumpPersonalCount() {
-  const newCount = getPersonalCount() + 1;
+function setPersonalCount(newCount) {
   localStorage.setItem(CONTRIBUTION_KEY, newCount);
   personalContributionEl.textContent = `Ваш вклад: ${newCount} кликов`;
 }
+
+function bumpPersonalCount(amount = 1) {
+  setPersonalCount(getPersonalCount() + amount);
+}
+
+function getUpgradeOwned(upgradeId) {
+  return Number(localStorage.getItem(`upgrade${upgradeId}Count`)) || 0;
+}
+
+function setUpgradeOwned(upgradeId, count) {
+  localStorage.setItem(`upgrade${upgradeId}Count`, count);
+}
+
+function getTotalCps() {
+  return UPGRADES.reduce((sum, upgrade) => sum + upgrade.cps * getUpgradeOwned(upgrade.id), 0);
+}
+
+function renderShop() {
+  UPGRADES.forEach((upgrade) => {
+    const owned = getUpgradeOwned(upgrade.id);
+    document.getElementById(`owned-${upgrade.id}`).textContent = `У вас: ${owned}`;
+
+    const buyButton = document.getElementById(`buy-${upgrade.id}`);
+    buyButton.disabled = gameOver || getPersonalCount() < upgrade.cost;
+  });
+}
+
+function buyUpgrade(upgradeId) {
+  const upgrade = UPGRADES.find((item) => item.id === upgradeId);
+  if (!upgrade || getPersonalCount() < upgrade.cost) return;
+
+  setPersonalCount(getPersonalCount() - upgrade.cost);
+  setUpgradeOwned(upgradeId, getUpgradeOwned(upgradeId) + 1);
+  renderShop();
+}
+
+UPGRADES.forEach((upgrade) => {
+  document.getElementById(`buy-${upgrade.id}`).addEventListener("click", () => buyUpgrade(upgrade.id));
+});
 
 function spawnPlusOne(clickEvent) {
   const plusOne = document.createElement("span");
@@ -78,6 +127,32 @@ function updateButtonLevel(count) {
   } else if (count >= 50) {
     clickButton.classList.add("level-neon");
   }
+}
+
+function spawnConfetti() {
+  const overlay = document.getElementById("gameOverOverlay");
+  const colors = ["#ffd700", "#ff6b6b", "#4cc9f0", "#06d6a0", "#f94144"];
+
+  for (let i = 0; i < 150; i++) {
+    const piece = document.createElement("div");
+    piece.className = "confetti-piece";
+    piece.style.left = `${Math.random() * 100}vw`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = `${2 + Math.random() * 3}s`;
+    piece.style.animationDelay = `${Math.random() * 2}s`;
+    overlay.appendChild(piece);
+  }
+}
+
+function checkGameOver(count) {
+  if (gameOver || count < TARGET_SCORE) return;
+
+  gameOver = true;
+  clickButton.disabled = true;
+  titleEl.textContent = "";
+  document.getElementById("gameOverOverlay").classList.add("show");
+  spawnConfetti();
+  renderShop();
 }
 
 function renderLeaderboard(leaderboard = []) {
@@ -118,8 +193,40 @@ async function loadCurrentCount() {
     counter.textContent = data.count;
     updateButtonLevel(data.count);
     renderLeaderboard(data.leaderboard);
+    checkGameOver(data.count);
   } catch (error) {
     console.error("Ошибка при загрузке счётчика:", error);
+  }
+}
+
+async function sendAutoClicks() {
+  if (gameOver) return;
+
+  const cps = getTotalCps();
+  if (cps <= 0) return;
+
+  pendingAutoClicks += cps;
+  bumpPersonalCount(cps);
+  renderShop();
+
+  const amount = pendingAutoClicks;
+  pendingAutoClicks = 0;
+
+  try {
+    const response = await fetch("/api/registerClick", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, amount }),
+    });
+    const data = await response.json();
+
+    counter.textContent = data.count;
+    updateButtonLevel(data.count);
+    renderLeaderboard(data.leaderboard);
+    checkGameOver(data.count);
+  } catch (error) {
+    console.error("Ошибка при отправке автокликов:", error);
+    pendingAutoClicks += amount;
   }
 }
 
@@ -138,16 +245,21 @@ async function pingOnline() {
 }
 
 personalContributionEl.textContent = `Ваш вклад: ${getPersonalCount()} кликов`;
+renderShop();
 loadCurrentCount();
 pingOnline();
 setInterval(loadCurrentCount, 2000);
 setInterval(pingOnline, 7000);
+setInterval(sendAutoClicks, 1000);
 
 clickButton.addEventListener("click", async (clickEvent) => {
+  if (gameOver) return;
+
   clickButton.disabled = true;
   spawnPlusOne(clickEvent);
   playClickSound();
   bumpPersonalCount();
+  renderShop();
   await saveNickname();
 
   try {
@@ -162,6 +274,7 @@ clickButton.addEventListener("click", async (clickEvent) => {
     counter.textContent = data.count;
     updateButtonLevel(data.count);
     renderLeaderboard(data.leaderboard);
+    checkGameOver(data.count);
 
     if (data.title) {
       titleEl.textContent = "🎉 " + data.title + " 🎉";
@@ -172,6 +285,6 @@ clickButton.addEventListener("click", async (clickEvent) => {
   } catch (error) {
     console.error("Ошибка при отправке клика:", error);
   } finally {
-    clickButton.disabled = false;
+    clickButton.disabled = gameOver;
   }
 });
