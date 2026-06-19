@@ -20,9 +20,9 @@ if (!userId) {
 
 nicknameInput.value = localStorage.getItem(NICKNAME_KEY) || "";
 
-nicknameInput.addEventListener("change", async () => {
+async function saveNickname() {
   const newNickname = nicknameInput.value.trim();
-  if (!newNickname) return;
+  if (!newNickname || newNickname === localStorage.getItem(NICKNAME_KEY)) return;
 
   try {
     const response = await fetch("/api/setNickname", {
@@ -43,7 +43,9 @@ nicknameInput.addEventListener("change", async () => {
   } catch (error) {
     console.error("Ошибка при сохранении ника:", error);
   }
-});
+}
+
+nicknameInput.addEventListener("change", saveNickname);
 
 function getPersonalCount() {
   return Number(localStorage.getItem(CONTRIBUTION_KEY)) || 0;
@@ -146,6 +148,7 @@ clickButton.addEventListener("click", async (clickEvent) => {
   spawnPlusOne(clickEvent);
   playClickSound();
   bumpPersonalCount();
+  await saveNickname();
 
   try {
     const response = await fetch("/api/registerClick", {

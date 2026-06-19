@@ -6,7 +6,9 @@
       "Bash(curl -s https://global-clicker-alpha.vercel.app/api/registerClick -o /tmp/resp.json)",
       "Read(//tmp/**)",
       "Bash(xxd)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(cd \"/c/Users/user/гиминай игра\" && REDIS_URL=$\\(grep REDIS_URL .env.local | sed -E 's/REDIS_URL=\"\\(.*\\)\"/\\\\1/'\\) node -e ' *)",
+      "Read(//c/c/Users/user/гиминай игра/**)"
     ]
   }
 }
