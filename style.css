@@ -32,6 +32,17 @@ h1 {
   text-shadow: 0 0 15px rgba(255, 209, 102, 0.6);
 }
 
+.personal-contribution {
+  font-size: 16px;
+  color: #b8b8d1;
+  margin-bottom: 25px;
+}
+
+.button-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .click-button {
   padding: 25px 60px;
   font-size: 24px;
@@ -42,7 +53,8 @@ h1 {
   border-radius: 50px;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(249, 65, 68, 0.4);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
 .click-button:hover {
@@ -51,7 +63,40 @@ h1 {
 
 .click-button:active {
   transform: scale(0.95);
-  box-shadow: 0 4px 10px rgba(249, 65, 68, 0.4);
+}
+
+.click-button.level-neon {
+  background: linear-gradient(135deg, #4cc9f0, #4361ee);
+  box-shadow: 0 0 25px 8px rgba(76, 201, 240, 0.7), 0 8px 20px rgba(67, 97, 238, 0.5);
+}
+
+.click-button.level-gold {
+  background: linear-gradient(135deg, #ffd700, #ff9e00);
+  box-shadow: 0 0 30px 10px rgba(255, 215, 0, 0.8), 0 8px 20px rgba(255, 158, 0, 0.5);
+  color: #2d2d44;
+}
+
+.plus-one {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, 0);
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffd166;
+  pointer-events: none;
+  animation: float-up 1s ease-out forwards;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80px) scale(0.6);
+  }
 }
 
 .title {
