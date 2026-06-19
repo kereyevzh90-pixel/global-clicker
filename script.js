@@ -252,8 +252,11 @@ setInterval(loadCurrentCount, 2000);
 setInterval(pingOnline, 7000);
 setInterval(sendAutoClicks, 1000);
 
-// ТЕСТОВЫЙ ЧИТ ДЛЯ ПРОВЕРКИ ФИНАЛА: пробел запускает/останавливает турбо-набор кликов,
-// темп нарастает каждый тик, чтобы реально дойти до квинтиллиона за разумное время.
+// ТЕСТОВЫЙ ЧИТ ДЛЯ ПРОВЕРКИ ФИНАЛА (ДЕАКТИВИРОВАН).
+// Чтобы снова включить — поставь CHEAT_ENABLED = true.
+// Пробел запускает/останавливает турбо-набор кликов, темп нарастает каждый тик
+// (старт 10 000/тик, рост ×1.8 каждые 300мс), чтобы реально дойти до квинтиллиона.
+const CHEAT_ENABLED = false;
 let cheatActive = false;
 let cheatRate = 0;
 const CHEAT_TICK_MS = 300;
@@ -261,7 +264,7 @@ const CHEAT_START_RATE = 10000;
 const CHEAT_GROWTH = 1.8;
 
 document.addEventListener("keydown", (keyEvent) => {
-  if (keyEvent.code !== "Space" || gameOver) return;
+  if (!CHEAT_ENABLED || keyEvent.code !== "Space" || gameOver) return;
   keyEvent.preventDefault();
 
   cheatActive = !cheatActive;
@@ -272,7 +275,7 @@ document.addEventListener("keydown", (keyEvent) => {
 });
 
 setInterval(async () => {
-  if (!cheatActive || gameOver) return;
+  if (!CHEAT_ENABLED || !cheatActive || gameOver) return;
 
   const amount = Math.floor(cheatRate);
   cheatRate *= CHEAT_GROWTH;
