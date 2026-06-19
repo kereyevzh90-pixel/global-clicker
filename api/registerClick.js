@@ -19,11 +19,17 @@ async function getClient() {
 }
 
 export default async function handler(req, res) {
+  const redis = await getClient();
+
+  if (req.method === "GET") {
+    const current = Number((await redis.get("clickCount")) || 0);
+    return res.status(200).json({ count: current, title: null });
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Метод не поддерживается" });
   }
 
-  const redis = await getClient();
   const count = await redis.incr("clickCount");
 
   let title = null;
