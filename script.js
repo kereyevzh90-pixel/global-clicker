@@ -12,7 +12,7 @@ const CONTRIBUTION_KEY = "personalClickCount";
 const NICKNAME_KEY = "nickname";
 const USER_ID_KEY = "userId";
 
-const TARGET_SCORE = 1000000000000000000; // квинтиллион — цель игры
+const TARGET_SCORE = 300; // ВРЕМЕННО для теста финала! Боевое значение: 1000000000000000000 (квинтиллион)
 
 const UPGRADES = [
   { id: 1, name: "Автокликер I", cost: 50, cps: 1 },
@@ -251,6 +251,28 @@ pingOnline();
 setInterval(loadCurrentCount, 2000);
 setInterval(pingOnline, 7000);
 setInterval(sendAutoClicks, 1000);
+
+// ВРЕМЕННЫЙ ЧИТ ДЛЯ ТЕСТА ФИНАЛА: пробел = +50 кликов. Удалить перед боевым релизом!
+document.addEventListener("keydown", async (keyEvent) => {
+  if (keyEvent.code !== "Space" || gameOver) return;
+  keyEvent.preventDefault();
+
+  try {
+    const response = await fetch("/api/registerClick", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, amount: 50 }),
+    });
+    const data = await response.json();
+
+    counter.textContent = data.count;
+    updateButtonLevel(data.count);
+    renderLeaderboard(data.leaderboard);
+    checkGameOver(data.count);
+  } catch (error) {
+    console.error("Ошибка чит-кода:", error);
+  }
+});
 
 clickButton.addEventListener("click", async (clickEvent) => {
   if (gameOver) return;
